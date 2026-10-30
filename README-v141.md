@@ -23,3 +23,6 @@ Until that is done, leads still arrive by email; only the sheet step is skipped.
 
 ## Update: the shared Website Leads script
 The UAE now uses your existing Website Leads Apps Script, with UAE added. See `apps-script/UAE-SETUP.md`. Netlify settings: `APPS_SCRIPT_URL` and `APPS_SCRIPT_TOKEN`. The earlier `google-sheet/` files are no longer used.
+
+## v141.1
+- Added a version tag ("uae-v141.1") to the enquiry status check, so you can see which build is live.

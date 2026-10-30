@@ -419,6 +419,7 @@ export function health() {
   return {
     success: true,
     endpoint: 'enquiry',
+    version: 'uae-v141.1',                         // bump to confirm which build is live
     recipient: MAIL_TO,
     provider: 'resend',
     runtime: 'netlify-functions',
