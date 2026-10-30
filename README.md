@@ -1,5 +1,75 @@
 # Tutee Connect — Study in Dubai & the UAE
 
+## October 2026 redesign of `index.html` ("After Hours")
+
+`index.html` is hand-maintained and **no longer comes from `assemble.py uae`**:
+re-running that script overwrites it. `universities.html`, `assets/css/main.css`,
+`assets/js/main.js` and `supabase-data.js` are unchanged and still power the
+directory page. Everything is same-origin, so the CSP in `netlify.toml` holds.
+
+- Concept: Dubai from last light to first light. Hero at dusk (Burj Khalifa),
+  petrol and ink chapters through the night, emerald for the residence pathway,
+  the enquiry at dawn over the dunes; ivory chapters carry reading.
+- Typography: **the Canada page's system, reused exactly** (identified in
+  `CANADA/tutee-canada/assets/canada/css/royal.css`): Playfair Display 400/500
+  with italics (family name "Playfair") for display, Manrope 400–700 for text
+  and UI; display weight 400, letter-spacing −0.02em, line-height 0.98, italic
+  for emphasis; scale d-xl/d-l/d-m/d-s and lede copied from the Canada CSS;
+  buttons in uppercase Manrope 700 at 0.14em. The eight woff2 files are copied
+  into `assets/fonts/` (not linked across projects, so the Canada site is never
+  touched). Bodoni Moda, Instrument Sans, Outfit and Fraunces are no longer used and can be deleted.
+- Colour tokens (`:root` in `assets/css/uae.css`): ink `#061317`, petrol
+  `#08222a`/`#0d2f38`/`#143e48`, emerald `#0f3b31`/`#1d6a55` (accent on light),
+  champagne `#e3cfa8` (accent on dark), bronze `#a8825a` (small marks), ivory
+  `#f4efe6`, mist `#e4eae7`. The logo always sits on an ivory chip.
+- Hero (kept at the client's request): the golden-hour desert photograph with the dune cut-out above "Study in Dubai". With motion allowed it is the first layer of a pinned stage (`.hs`, 890svh, 870 on phones), and everything below is driven by scroll position (screens scrolled, q):
+  - 0 – 0.7: the headline sinks into the dunes (`--hp`) and the intro copy fades.
+  - 0.7 – 1.6: the sand curtain. The photograph splits into ten strips (`.hero-curtain i`, each a slice of the same image at cover 48% 42%, so the swap is seamless) that fall away left to right, accelerating, uncovering the city.
+  - Slide two, "From the dunes, into the city." (`city-night-*`): the city settles from a slight zoom and the words rise into place; no blur anywhere. From 2.2 its headline swells past the viewer and the city fades to dark.
+  - From 2.8: slide three, "Seven emirates, one federal visa." as a scroll-driven tour of the seven emirates in the client's order: 01 Abu Dhabi (Sheikh Zayed Grand Mosque), 02 Dubai (Dubai Frame), 03 Sharjah (Al Qasba canal), 04 Ajman (Ajman Corniche), 05 Umm Al Quwain (waterfront), 06 Ras Al Khaimah (Al Marjan Island), 07 Fujairah. No timer, nothing to click. Each photograph is cut into seven slices labelled with the emirates; scrolling assembles it, holds it with a pin caption (emirate, place, 0N / 07), then scatters it as the next assembles. The tour eases toward the scroll position over a few frames so it glides rather than stepping with each wheel tick. Photos supplied by Tutee Connect (confirm licences), upscaled 4x with Real-ESRGAN, `em-<emirate>-2000/1000.webp`, each shown whole. The Fujairah photograph shows a pink palace that closely resembles Emirates Palace in Abu Dhabi; confirm it before publishing. The older `uae-*` tour images and `marina-night-*` are no longer used
+  arrives soft and sharpens. `initHeroSlides()`; scroll position only, reverses
+  exactly; a 02 / 03 counter and "Scroll" sit at the bottom. With reduced
+  motion or no JS the slides are ordinary sections. `soft-desert.webp` is no
+  longer used.
+- Destinations (`#destinations`): a Tutee Connect student passport with one
+  spread for each of the seven emirates (Dubai, Abu Dhabi, Sharjah, Ajman,
+  Umm Al Quwain, Ras Al Khaimah, Fujairah). Left page: entry number, name,
+  CAA-licensed count and QS 2027 count (both computed from
+  `universities-data.js`), a short description, the QS-ranked names (Dubai,
+  Abu Dhabi) or the full list of institutions (the others, QS-ranked ones
+  tagged), and a "See <emirate> universities" link that sets the finder.
+  Right page ("visa page", decorative): a map of the UAE with that emirate
+  shaded (Natural Earth admin-1 boundaries, public domain), the city, a
+  photograph or the institution count, and an entry stamp. The passport,
+  stamps and the machine-readable-style line are a brand keepsake, not an
+  imitation of an official document. Screens 901px and wider with motion
+  allowed: the book lies on a sand desk, pinned (about 5.5 screens); scrolling
+  opens the cover and turns one page per emirate, stamps land as each spread
+  settles, and thumb-index tabs (DXB, AUH, SHJ, AJM, UAQ, RAK, FUJ) on the
+  fore-edge jump to any emirate (`initPassport()`; scroll position only).
+  Tablets, phones and reduced motion: the seven spreads laid out in order.
+- "Six nations' campuses, one city." now sits in a short ivory band after it.
+- The arch shape remains only as the frame of the Student life photograph.
+- Imagery below the hero: photographs colour-graded to the palette (petrol
+  shadows, champagne highlights) as `assets/img/uae/after-*.webp`; the tower
+  interlude uses the Burj Khalifa photograph (imran shahabuddin, CC BY 2.0).
+  `after-front-*` is no longer used.
+- Motion (no library): hero intro, scroll depth and night-fall (`--hp`), one
+  text reveal (`.rise`), picture reveal, destination wipe on tab change, the
+  tower interlude unmasking with the scroll (`--p`), journey meter following
+  the step in view, pathway drawing itself, count-ups, magnetic CTAs. No
+  pinning or scroll hijacking; `prefers-reduced-motion` shows the finished state.
+- Sections: hero → intro (`#about`) → destination explorer (`#destinations`,
+  ARIA tabs) → tower interlude → services → universities → journey + CAA
+  checker → funding → residence pathway → life + family → reviews (one at a
+  time) → FAQ → enquiry (`#contact`) → footer.
+- The form posts the same JSON to `/api/enquiry`; `destination` is
+  "General UAE Inquiry" or "UAE Inquiry: <topic>". Unchanged.
+- Licence still to confirm: the desert photograph behind the enquiry section
+  was supplied via Pinterest.
+
+## Original build notes
+
 The tenth destination page. Generated, not hand-written: the fragments come from
 `_tooling/fragments-uae/` (themselves generated from `fragments-uk/` by
 `_tooling/localise_ae.py`), and the two pages are assembled from them.
@@ -205,3 +275,32 @@ rather than inventing a position.
   (private non-profit, founded by the Ruler of Sharjah).
 - The enquiry form needs `RESEND_API_KEY` in the deployment environment — see
   `../_tooling/ENQUIRY_SETUP.md`.
+
+## v23: black and gold (22 Oct 2026)
+- Whole page restyled (the client found every section except the seven-emirates slide boring). Kept: the desert hero photograph and its sinking title, the seven-emirates slice tour, all content, forms, finder and integrations.
+- Colour: true black with gold (#d4b26a) and warm white (#f6f3ec) text; a few light surfaces (enquiry form, English checker, residence note, passport pages, dialogs) keep dark ink. Contrast: body 19:1, soft text 9.4:1, gold 10.4:1, button text 10.4:1.
+- Type: Bodoni Moda (headings, self-hosted variable font) and Instrument Sans (text and controls). No italic accent words; capitals labels set in sentence case.
+- Hero to city: the gilded opening (a gold line draws across the horizon and the desert parts top and bottom), replacing the sand curtain.
+- New details: a faint gold mashrabiya lattice behind four dark chapters, drifting slower than the page (`initLattice()`); services as a concierge menu with a gold rule under the open item; universities as dark cards with a gold QS seal; the seven admissions steps on a gold thread that fills as you read; black-and-gold passport.
+- Footer links have 44px tap rows on touch screens.
+- Plugins used: frontend-design (plan and anti-default review), ui-ux-pro-max (palette and font-pairing search; its luxury results pointed to black + gold and a Didone + clean sans), design:design-critique and VectorLab ux-audit (section-by-section critique), hzblj css-animations (transform/opacity only, reduced motion), taste-skill (lint 0 FAIL; inspect flags remaining are deliberate: seven-emirates numbering and labels, pinned text over photos), playwright-cli (console, reduced motion, phone overflow, forced colours). Not usable here: Superdesign, MagicPath and 21st (their servers are blocked by the network allowlist; MagicPath also needs a login), serena (not connected to this session), vaadin-skills (Java/Vaadin only), skill-creator (for making skills).
+
+## v24: sand and bronze (22 Oct 2026)
+- Client asked for a lighter overall theme and chose "Sand & bronze". Reading chapters alternate warm sand (#f3ebdd), paper (#fbf8f2) and deeper sand (#eadfcb) with espresso text (#2a2118, 13:1) and bronze accents and buttons (#7a4f24, 5.4–6:1 on sand; paper text on bronze 6.7:1).
+- The photographic moments stay dark espresso (#241a12) with gold (#d9b878): the two slides, reviews, the enquiry over the dunes, the footer, and the small dark inserts (earn-while-you-learn, English-checker intro, the 2021 family figure).
+- The passport sits on a sand desk with an espresso cover and gold foil; the lattice is bronze on sand.
+- Fonts, layout and motion unchanged from v23 (Bodoni Moda + Instrument Sans; gilded opening; seven-emirates tour).
+
+## v25: the city rises from the dunes (22 Oct 2026)
+- Replaces the gilded opening. After "Study in Dubai" sinks, the night city floods up from below the screen with the exact shape of the dune crest, then that edge reshapes, column by column (centre first), into the traced outline of Downtown Dubai's real towers: the skyline grows out of the sand into the golden desert sky, traced by a glowing gold line. The night city is scaled so its Burj Khalifa stands exactly on the hazy Burj in the desert photograph. Then the desert sky fades to dusk and "From the dunes, into the city." rises in.
+- Both outlines were traced from the photographs (dune crest from the hero cut-out's alpha, skyline from a sky mask of the city photo; 400 samples each) and ship as data on the SVG (`data-rise`). uae.js maps them through object-fit: cover for any screen, then writes a clip-path polygon on the hero and the gold polyline (transform-free; median frame 16.7 ms).
+- Pinned stage now 960svh (940 on phones). Reduced motion and no JS: unchanged plain sections.
+
+## v26: lighter rise (23 Oct 2026)
+- The client found v25 "heavy". Same idea, lighter execution: about one screen from dunes to city instead of two (rise 0.3–0.6, towers grow 0.6–1.1, desert sky fades to dusk 0.85–1.2 while the towers finish, so there is no hold on a double skyline); no glow (the blurred SVG glow repainted every frame), a single 1.2px warm-white line at 80% that fades as the towers settle; gentler centre-first stagger; 96 outline columns instead of 140. Pinned stage 845svh (825 on phones).
+
+## v27: window seat (23 Oct 2026)
+- Replaces "the city rises from the dunes" (the client found it heavy). After "Study in Dubai" sinks, the desert photograph closes into an aircraft window floating on sand (a rounded inset clip with a paper-white frame and a soft shadow), "Next stop, Dubai." and "A four-hour flight from home." appear either side (above and below on phones), the view inside the window turns from desert to Dubai at night, and the window opens out into the city slide. Only a clip and opacities change; about one screen of scroll. Pinned stage 860svh (840 on phones).
+
+## v28: the Germany page's type (23 Oct 2026)
+- Headings now use Fraunces exactly as the Germany page does: weight 340, optical size 144, SOFT 20, tracking -0.025em, with the closing words of a heading in a soft italic (weight 300, SOFT 100) in the accent colour (bronze on sand, gold on dark). Text and buttons in Manrope (400–700). Self-hosted: `fraunces-latin-full-normal/italic.woff2` (variable: weight, opsz, SOFT, WONK; from @fontsource-variable/fraunces, SIL OFL) and the existing Manrope files. The Germany page was only read, not changed.

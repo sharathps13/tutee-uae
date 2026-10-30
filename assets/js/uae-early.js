@@ -1,0 +1,1 @@
+!function(s){s.classList.add("js");var d=window.matchMedia;d&&!d("(prefers-reduced-motion: reduce)").matches&&(s.classList.add("js-hs"),d("(min-width: 901px)").matches&&s.classList.add("js-pp"))}(document.documentElement);

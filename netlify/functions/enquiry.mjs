@@ -200,7 +200,9 @@ export function buildEmail(f, country) {
   ];
   if (country) rows.push(['Landing Page', country]);
   if (f.page) rows.push(['Submitted From', f.page]);
-  rows.push(...f.extras);
+  const LABELS = { state: 'State', course: 'Course', shortlisted_universities: 'Shortlisted Universities',
+    preferred_call_time: 'Preferred Call Time', lead_source: 'Lead Source' };
+  rows.push(...f.extras.map(([k, v]) => [LABELS[k] || k, v]));
   rows.push(['Source', f.from_name]);
 
   const who = f.name || 'the enquirer';
@@ -274,6 +276,42 @@ async function sendViaResend(payload) {
   } catch { return ''; }
 }
 
+/** Forward the lead to the shared Tutee Connect "Website Leads" Apps Script
+ * (APPS_SCRIPT_URL + APPS_SCRIPT_TOKEN, the same setup as the other country
+ * sites). The script adds a row to the "UAE Leads" tab — Date, Time (IST, set by
+ * the script), Full Name, Phone Number, Email, State, Shortlisted Universities,
+ * Course, Lead Source, Preferred Call Time — and emails business@tuteeconnect.com.
+ * Returns { saved, mailed }; saved is false when the script is not configured. */
+export function scriptLead(f, country) {
+  const ex = Object.fromEntries(f.extras);
+  const c = country || 'UAE';
+  return {
+    country: c,
+    name: f.name,
+    phone: f.phone,
+    email: f.email,
+    state: ex.state || '',
+    shortlist: ex.shortlisted_universities || (f.destination.startsWith('UAE Inquiry: ') ? f.destination.slice(13) : ''),
+    course: ex.course || '',
+    lead_source: ex.lead_source || `${c} Landing Page`,
+    call_time: ex.preferred_call_time || 'Any time',
+    destination: f.destination,
+    page: f.page,
+  };
+}
+async function sendToAppsScript(f, country) {
+  const url = (process.env.APPS_SCRIPT_URL || '').trim();
+  if (!url) return { saved: false, mailed: false };
+  const body = { token: (process.env.APPS_SCRIPT_TOKEN || '').trim(), ...scriptLead(f, country) };
+  const res = await postJson(url, {}, body, SEND_TIMEOUT_MS);
+  let parsed = null;
+  try { parsed = JSON.parse(await res.text()); } catch { /* not JSON */ }
+  if (!res.ok || !parsed || parsed.success !== true) {
+    throw new Error(`apps script rejected the lead: HTTP ${res.status} ${parsed ? parsed.message : ''}`);
+  }
+  return { saved: true, mailed: parsed.mailed === true };
+}
+
 /** Write the lead to Postgres. Supabase is the system of record, so this runs
  * before the email: if the send later fails, the enquiry still exists and the
  * dashboard shows it. Returns the row id, or null when Supabase is unconfigured. */
@@ -331,17 +369,27 @@ export async function handle(rawBody, headers = {}) {
     console.error(`enquiry: supabase insert failed: ${exc.message}`);
   }
 
+  // 1b. the Website Leads sheet ("UAE Leads" tab) — the Apps Script also emails the lead
+  let sheeted = false;
+  let scriptMailed = false;
+  try {
+    const r = await sendToAppsScript(fields, country);
+    sheeted = r.saved; scriptMailed = r.mailed;
+  } catch (exc) {
+    console.error(`enquiry: apps script failed: ${exc.message}`);
+  }
+
   // 2. notify the business inbox
   let messageId = '';
   let emailed = false;
   try {
-    messageId = await sendViaResend(buildEmail(fields, country));
-    emailed = true;
+    if (scriptMailed) { emailed = true; messageId = 'apps-script'; }   // already emailed — no duplicate
+    else { messageId = await sendViaResend(buildEmail(fields, country)); emailed = true; }
   } catch (exc) {
     console.error(`enquiry: send refused: ${exc.message}`);
   }
 
-  if (!stored && !emailed) {
+  if (!stored && !emailed && !sheeted) {
     // nothing captured the enquiry anywhere — this is the only real failure
     return {
       status: 502,
@@ -361,7 +409,7 @@ export async function handle(rawBody, headers = {}) {
   }
 
   console.log(`enquiry: country=${country || '-'} destination=${fields.destination} `
-    + `stored=${stored ? leadId : 'no'} emailed=${emailed ? (messageId || 'yes') : 'no'}`);
+    + `stored=${stored ? leadId : 'no'} sheet=${sheeted ? 'yes' : 'no'} emailed=${emailed ? (messageId || 'yes') : 'no'}`);
 
   return { status: 200, payload: { success: true, message: OK_MESSAGE } };
 }
@@ -377,6 +425,7 @@ export function health() {
     resend_configured: Boolean((process.env.RESEND_API_KEY || '').trim()),
     supabase_configured: Boolean((process.env.SUPABASE_URL || '').trim()
       && (process.env.SUPABASE_SERVICE_ROLE_KEY || '').trim()),
+    apps_script_configured: Boolean((process.env.APPS_SCRIPT_URL || '').trim()),
     from: (process.env.MAIL_FROM || DEFAULT_FROM).trim(),
     country: resolveCountry('') || '(inferred per request)',
   };
