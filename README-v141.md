@@ -26,3 +26,6 @@ The UAE now uses your existing Website Leads Apps Script, with UAE added. See `a
 
 ## v141.1
 - Added a version tag ("uae-v141.1") to the enquiry status check, so you can see which build is live.
+
+## v141.2
+- Fixed the form "Page not found": removed the function's custom path so the netlify.toml redirect (/api/enquiry → /.netlify/functions/enquiry) reaches it.

@@ -419,7 +419,7 @@ export function health() {
   return {
     success: true,
     endpoint: 'enquiry',
-    version: 'uae-v141.1',                         // bump to confirm which build is live
+    version: 'uae-v141.2',                         // bump to confirm which build is live
     recipient: MAIL_TO,
     provider: 'resend',
     runtime: 'netlify-functions',
@@ -484,4 +484,7 @@ export default async function (req) {
   }
 }
 
-export const config = { path: '/api/enquiry' };
+// No `config.path` here: declaring a custom path switches off the default
+// /.netlify/functions/enquiry address, and netlify.toml's redirect forwards
+// /api/enquiry to exactly that address — together they produced a 404.
+// The redirect in netlify.toml alone maps /api/enquiry to this function.
