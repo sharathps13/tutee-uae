@@ -20,6 +20,12 @@
 # path itself via `export const config`, so this redirect is belt-and-braces:
 # it keeps the endpoint working on older Netlify function runtimes too.
 [[redirects]]
+  from = "/api/news"
+  to = "/.netlify/functions/news"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/api/enquiry"
   to = "/.netlify/functions/enquiry"
   status = 200
