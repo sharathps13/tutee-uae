@@ -760,3 +760,6 @@ Phone menu button: clear glass, light lines over dark sections. Phone profile ca
 
 ## v167 performance
 News bar: no drop-shadow filter / clip-path (were repainting every frame in the pinned hero) — contained layer, ticker pauses while scrolling. CTA light sweep only on hover (was a background-position loop). Decorative pulse rings play a few times then rest. No live backdrop blur on touch/≤900px header. Measured back-to-back with v120 on the same host: now on par (desktop 0.5–5%, phones noisy under 4–6x CPU throttle).
+
+## v168 (mobile only)
+Hero title/copy no overlap; services dial without ring badges; top-12 CTA gap; journey heading restored; family fan narrower; 16px fields (no iOS zoom); keyboard resize no longer re-runs layout; chat freezes page behind it on phones.
