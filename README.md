@@ -763,3 +763,15 @@ News bar: no drop-shadow filter / clip-path (were repainting every frame in the 
 
 ## v168 (mobile only)
 Hero title/copy no overlap; services dial without ring badges; top-12 CTA gap; journey heading restored; family fan narrower; 16px fields (no iOS zoom); keyboard resize no longer re-runs layout; chat freezes page behind it on phones.
+
+## v169 (mobile only)
+Cabin window smaller/centred with lines clear; city slide text wash; services as swipeable labelled pills; family text left, card right.
+
+## v170 (mobile)
+City slide single bottom gradient; family cards below text; dot swipe indicators (services, top-12, journey).
+
+## v171 (mobile)
+Family cards as a neat deck; dot indicators also on passport emirate tabs.
+
+## v172 (mobile)
+Family card grows with content (no clipping, CTA at end); swipe dots built on every width so they show after resize.
