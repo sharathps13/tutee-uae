@@ -781,3 +781,6 @@ Audited 21 viewports (320–2560 wide, portrait/landscape, phones/tablets/deskto
 
 ## v174 (mobile)
 Service pills rebuilt as own markup (svc-pills); typing on touch screens: page sections frozen in height, no scripted scrolls/re-measures, no smooth scroll-behavior — fixes jumps in chat and enquiry card.
+
+## v175 (phones)
+Services: desktop dial resized for phones (pills removed). Chat question and profile-card text fields open in a typing sheet pinned to the top; page behind frozen, scroll restored on close; Next steps through name/phone/email; Send submits the chat.
