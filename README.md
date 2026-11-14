@@ -778,3 +778,6 @@ Family card grows with content (no clipping, CTA at end); swipe dots built on ev
 
 ## v173 layout audit
 Audited 21 viewports (320–2560 wide, portrait/landscape, phones/tablets/desktops): no sideways overflow, no text cut or clamped. Top-12 tags wrap; full texts on phones (destinations, funding, earn, services). Minifier bug fixed: lightningcss merged translate/scale into transform, so the hosted (minified) CSS differed from source on phones — overrides now appended after minification.
+
+## v174 (mobile)
+Service pills rebuilt as own markup (svc-pills); typing on touch screens: page sections frozen in height, no scripted scrolls/re-measures, no smooth scroll-behavior — fixes jumps in chat and enquiry card.
